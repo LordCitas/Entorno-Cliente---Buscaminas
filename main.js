@@ -1,13 +1,11 @@
-let numFilas, mapa = [];
+let numFilas, mapa = [], progreso = [], ronda = 0;
 
 numFilas = parseInt(prompt("Introduce el número de filas del tablero (mínimo 5): "));
 while(isNaN(numFilas) || numFilas < 5){
     numFilas = parseInt(prompt("El número de filas del tablero debe ser mayor o igual que 5. Introdúcelo de nuevo: "));
 }
 
-
-
-function generarTablero(numFilas){
+function generarTablero(){
     let mapa = [], fila = [];
     for(let i=0; i<numFilas; i++){
         fila = [];
@@ -17,13 +15,17 @@ function generarTablero(numFilas){
         mapa.push(fila);
     }
     console.table(mapa);
-    colocarMinas(mapa);
+    mapa = colocarMinas();
     console.table(mapa);
     return mapa;
 }
 
-function colocarMinas(mapa){
-    let resultado = mapa;
+function generarProgresoInicial(){
+
+}
+
+function colocarMinas(){
+    let resultado = [].concat(mapa);
     let numBombas = parseInt((numFilas*numFilas)/5), temp, x, y;
     console.log(`El numero de bombas es ${numBombas}`);
     for(let i=0; i<numBombas; i++){
@@ -36,7 +38,7 @@ function colocarMinas(mapa){
     return resultado;
 }
 
-function contarMinasAdyacentes(mapa, x, y){
+function contarMinasAdyacentes(x, y){
     let contador = 0, margenX = [], margenY = [];
 
     switch(x){
@@ -63,8 +65,8 @@ function contarMinasAdyacentes(mapa, x, y){
         break;
     }
 
-    for(posX of margenX){
-        for(posY of margenY){
+    for(let posX of margenX){
+        for(let posY of margenY){
             if(mapa[posX][posY] == "*" && !(posX == x && posY == y)){
                 contador++;
             }
@@ -74,7 +76,17 @@ function contarMinasAdyacentes(mapa, x, y){
     return contador;
 }
 
-mapa = generarTablero(numFilas);
+function asignarNumeroDeBombasAdyacentes(x,y){
+    let numero = contarMinasAdyacentes(x,y);
+    progreso[x][y] = (numero == 0)? " " : numero;
+}
+
+function mostrarCasillasAdyacentesVaciasONumericas(x, y){
+    asignarNumeroDeBombasAdyacentes(x,y);
+    console.table(progreso);
+}
+
+mapa = generarTablero();
 console.table(mapa);
 let equisde = contarMinasAdyacentes(mapa, 0, 0);
 console.log(`La casilla (0,0) tiene ${equisde} adyacentes`);
