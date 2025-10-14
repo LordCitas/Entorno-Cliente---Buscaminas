@@ -1,4 +1,4 @@
-let numFilas, mapa = [], progreso = [], ronda = 0;
+let numFilas, mapa1 = [], progreso = [], ronda = 0;
 
 numFilas = parseInt(prompt("Introduce el número de filas del tablero (mínimo 5): "));
 while(isNaN(numFilas) || numFilas < 5){
@@ -6,25 +6,23 @@ while(isNaN(numFilas) || numFilas < 5){
 }
 
 function generarTablero(){
-    let mapa = [], fila = [];
+    let mapaInicial = [], mapaConMinas = [], fila = [];
     for(let i=0; i<numFilas; i++){
         fila = [];
         for(let j=0; j<numFilas; j++){
             fila.push("X");
         }
-        mapa.push(fila);
+        mapaInicial.push(fila);
     }
-    console.table(mapa);
-    mapa = colocarMinas();
-    console.table(mapa);
-    return mapa;
+    mapaConMinas = colocarMinas(mapaInicial);
+    return mapaConMinas;
 }
 
 function generarProgresoInicial(){
 
 }
 
-function colocarMinas(){
+function colocarMinas(mapa){
     let resultado = [].concat(mapa);
     let numBombas = parseInt((numFilas*numFilas)/5), temp, x, y;
     console.log(`El numero de bombas es ${numBombas}`);
@@ -34,18 +32,19 @@ function colocarMinas(){
         x = parseInt(temp/numFilas);
         y = temp%numFilas;
         (resultado[x][y] == "X")? resultado[x][y] = "*" : i--;
+        console.table(resultado);
     }
     return resultado;
 }
 
-function contarMinasAdyacentes(x, y){
-    let contador = 0, margenX = [], margenY = [];
+function contarMinasAdyacentes(mapa, x, y){
+    let resultado = [].concat(mapa), contador = 0, margenX = [], margenY = [];
 
     switch(x){
         case 0:
             margenX = [x, x+1];
         break;
-        case numFilas:
+        case numFilas-1:
             margenX = [x-1, x];
         break;
         default:
@@ -57,7 +56,7 @@ function contarMinasAdyacentes(x, y){
         case 0:
             margenY = [y, y+1];
         break;
-        case numFilas:
+        case numFilas-1:
             margenY = [y-1, y];
         break;
         default:
@@ -67,7 +66,7 @@ function contarMinasAdyacentes(x, y){
 
     for(let posX of margenX){
         for(let posY of margenY){
-            if(mapa[posX][posY] == "*" && !(posX == x && posY == y)){
+            if(resultado[posX][posY] == "*" && !(posX == x && posY == y)){
                 contador++;
             }
         }
@@ -86,10 +85,11 @@ function mostrarCasillasAdyacentesVaciasONumericas(x, y){
     console.table(progreso);
 }
 
-mapa = generarTablero();
-console.table(mapa);
+let mapa = generarTablero();
 let equisde = contarMinasAdyacentes(mapa, 0, 0);
 console.log(`La casilla (0,0) tiene ${equisde} adyacentes`);
+equisde = contarMinasAdyacentes(mapa, 4, 4);
+console.log(`La casilla (4,4) tiene ${equisde} adyacentes`);
 
 
 
