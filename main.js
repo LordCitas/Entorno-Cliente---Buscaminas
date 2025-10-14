@@ -1,4 +1,4 @@
-let numFilas, mapa1 = [], progreso = [], ronda = 0;
+let numFilas, ronda = 0, vivo = true;
 
 numFilas = parseInt(prompt("Introduce el número de filas del tablero (mínimo 5): "));
 while(isNaN(numFilas) || numFilas < 5){
@@ -6,7 +6,7 @@ while(isNaN(numFilas) || numFilas < 5){
 }
 
 function generarTablero(){
-    let mapaInicial = [], mapaConMinas = [], fila = [];
+    let mapaInicial = [], fila = [];
     for(let i=0; i<numFilas; i++){
         fila = [];
         for(let j=0; j<numFilas; j++){
@@ -14,12 +14,7 @@ function generarTablero(){
         }
         mapaInicial.push(fila);
     }
-    mapaConMinas = colocarMinas(mapaInicial);
-    return mapaConMinas;
-}
-
-function generarProgresoInicial(){
-
+    return mapaInicial;
 }
 
 function colocarMinas(mapa){
@@ -85,56 +80,38 @@ function mostrarCasillasAdyacentesVaciasONumericas(x, y){
     console.table(progreso);
 }
 
-let mapa = generarTablero();
-let equisde = contarMinasAdyacentes(mapa, 0, 0);
-console.log(`La casilla (0,0) tiene ${equisde} adyacentes`);
-equisde = contarMinasAdyacentes(mapa, 4, 4);
-console.log(`La casilla (4,4) tiene ${equisde} adyacentes`);
+let mapa = generarTablero(), progreso = generarTablero(), filaSeleccionada, columnaSeleccionada, casillaValida;
+mapa = colocarMinas(mapa);
 
-
-
-
-/*let mesas = [], numMesas, numClientes = 0, continuar = true, encontrada;
-
-numMesas = parseInt(prompt("Introduce la cantidad de mesas del restaurante: "));
-while (isNaN(numMesas) || numMesas <= 0){
-    numMesas = parseInt(prompt("El valor no es válido. Introduce otro: "));
-}
-
-for (let i = 0; i<numMesas; i++){
-    mesas[i] = Math.floor(Math.random() * 5);
-}
-
-document.open();
-
-while(continuar){
-    document.writeln(`<p>Mesas: [${mesas}]</p>`);
-
-    numClientes = parseInt(prompt("Introduce la cantidad de clientes que van a cenar: "));
-    while (isNaN(numClientes) || numClientes > 4){
-        numClientes = parseInt(prompt(`Lo siento, no admitimos grupos de ${numClientes}, haga grupos de 4 personas como máximo e intente de nuevo`));
+while(vivo){
+    console.log("Estás en la ronda " + (ronda+1) + ":");
+    console.table(progreso);
+    casillaValida = true;
+    do{
+        filaSeleccionada = parseInt(prompt("Introduce la fila que quieres descubrir (0 a " + (numFilas-1) + "): "));
+        while(isNaN(filaSeleccionada) || filaSeleccionada < 0 || filaSeleccionada >= numFilas){
+            filaSeleccionada = parseInt(prompt("El número de fila debe estar entre 0 y " + (numFilas-1) + ". Introdúcelo de nuevo: "));
+        }  
+        columnaSeleccionada = parseInt(prompt("Introduce la columna que quieres descubrir (0 a " + (numFilas-1) + "): "));
+        while(isNaN(columnaSeleccionada) || columnaSeleccionada < 0 || columnaSeleccionada >= numFilas){
+            columnaSeleccionada = parseInt(prompt("El número de columna debe estar entre 0 y " + (numFilas-1) + ". Introdúcelo de nuevo: "));
+        }
+        if(progreso[filaSeleccionada][columnaSeleccionada] != "X"){
+            console.log("La casilla seleccionada ya ha sido descubierta. Selecciona otra.");
+            casillaValida = false;
+        }
+    } while (!casillaValida);
+    
+    if(mapa[filaSeleccionada][columnaSeleccionada] == "*"){
+        vivo = false;
+        console.log("¡Has perdido! Has dado con una mina en la casilla (" + filaSeleccionada + "," + columnaSeleccionada + ").");
+        console.log("El tablero era:");
+        console.table(mapa);
+    } else {
+        mostrarCasillasAdyacentesVaciasONumericas(filaSeleccionada, columnaSeleccionada);
+        ronda++;
     }
 
-    if(numClientes < 1){
-        continuar = false;
-    }else{
-        document.writeln(`El usuario pide una mesa para ${numClientes}<br>`);
 
-        encontrada = false;
 
-        for(let i = 0; i < numMesas && !encontrada; i++){
-            if(mesas[i] + numClientes <= 4){
-                document.writeln(`Por favor, siéntese en la mesa ${i}<br><br>`);
-                mesas[i] += numClientes;
-                encontrada = true;
-            }
-        }
-
-        if(!encontrada){
-            document.writeln("Lo siento, no queda sitio en el restaurante<br><br>");
-        }
-    }
 }
-
-
-document.close();*/
