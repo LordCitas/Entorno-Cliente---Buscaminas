@@ -32,32 +32,27 @@ function colocarMinas(mapa){
     return resultado;
 }
 
+function generarMargen(n){
+    let margen = [];
+    switch(n){
+        case 0:
+            margen = [n, n+1];
+        break;
+        case numFilas-1:
+            margen = [n-1, n];
+        break;
+        default:
+            margen = [n-1, n, n+1];
+        break;
+    }
+    return margen;
+}
+
 function contarMinasAdyacentes(mapa, x, y){
     let resultado = [].concat(mapa), contador = 0, margenX = [], margenY = [];
 
-    switch(x){
-        case 0:
-            margenX = [x, x+1];
-        break;
-        case numFilas-1:
-            margenX = [x-1, x];
-        break;
-        default:
-            margenX = [x-1, x, x+1];
-        break;
-    }
-
-    switch(y){
-        case 0:
-            margenY = [y, y+1];
-        break;
-        case numFilas-1:
-            margenY = [y-1, y];
-        break;
-        default:
-            margenY = [y-1, y, y+1];
-        break;
-    }
+    margenX = generarMargen(x);
+    margenY = generarMargen(y);
 
     for(let posX of margenX){
         for(let posY of margenY){
@@ -70,20 +65,31 @@ function contarMinasAdyacentes(mapa, x, y){
     return contador;
 }
 
-function asignarNumeroDeBombasAdyacentes(x,y){
-    let numero = contarMinasAdyacentes(x,y);
-    progreso[x][y] = (numero == 0)? " " : numero;
-}
+function mostrarCasillasAdyacentesVaciasONumericas(mapa, progreso, x, y){
+    let resultado = [].concat(progreso), numero;
+    let margenX = generarMargen(x), margenY = generarMargen(y);
+    resultado[x][y] = contarMinasAdyacentes(mapa, x, y);
+    for(let posX of margenX){
+        for(let posY of margenY){
+            if(resultado[posX][posY] == "X" /*&& !(posX == x && posY == y)*/ && mapa[posX][posY] != "*"){
+                numero = contarMinasAdyacentes(mapa, posX, posY);
+                if(numero === 0){
+                    mostrarCasillasAdyacentesVaciasONumericas(mapa, resultado, posX, posY);
+                } else {
+                    resultado[posX][posY] = numero;
+                }
+            }
+        }
+    }
 
-function mostrarCasillasAdyacentesVaciasONumericas(x, y){
-    asignarNumeroDeBombasAdyacentes(x,y);
-    console.table(progreso);
+    return resultado;
 }
 
 let mapa = generarTablero(), progreso = generarTablero(), filaSeleccionada, columnaSeleccionada, casillaValida;
 mapa = colocarMinas(mapa);
+console.log("la casilla (0,0) tiene " + contarMinasAdyacentes(mapa,0,0) + " minas adyacentes.");
 
-while(vivo){
+/*while(vivo){
     console.log("Estás en la ronda " + (ronda+1) + ":");
     console.table(progreso);
     casillaValida = true;
@@ -114,4 +120,4 @@ while(vivo){
 
 
 
-}
+}*/
