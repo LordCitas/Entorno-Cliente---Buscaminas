@@ -71,10 +71,10 @@ function mostrarCasillasAdyacentesVaciasONumericas(mapa, progreso, x, y){
     resultado[x][y] = contarMinasAdyacentes(mapa, x, y);
     for(let posX of margenX){
         for(let posY of margenY){
-            if(resultado[posX][posY] == "X" /*&& !(posX == x && posY == y)*/ && mapa[posX][posY] != "*"){
+            if(resultado[posX][posY] == "X" && mapa[posX][posY] != "*"){
                 numero = contarMinasAdyacentes(mapa, posX, posY);
                 if(numero === 0){
-                    mostrarCasillasAdyacentesVaciasONumericas(mapa, resultado, posX, posY);
+                    resultado = mostrarCasillasAdyacentesVaciasONumericas(mapa, resultado, posX, posY);
                 } else {
                     resultado[posX][posY] = numero;
                 }
@@ -85,9 +85,25 @@ function mostrarCasillasAdyacentesVaciasONumericas(mapa, progreso, x, y){
     return resultado;
 }
 
+function revelarCasilla(mapa, progreso, x, y){
+    let resultado = [].concat(progreso);
+    if(mapa[x][y] === "*"){
+        resultado = false;
+    } else if (contarMinasAdyacentes(mapa[x][y]) == 0){
+        resultado = mostrarCasillasAdyacentesVaciasONumericas(mapa, resultado, x, y);
+    } else {
+        resultado[x][y] = contarMinasAdyacentes(mapa, x, y);
+    }
+}
+
 let mapa = generarTablero(), progreso = generarTablero(), filaSeleccionada, columnaSeleccionada, casillaValida;
 mapa = colocarMinas(mapa);
-console.log("la casilla (0,0) tiene " + contarMinasAdyacentes(mapa,0,0) + " minas adyacentes.");
+console.log("la casilla (4,4) tiene " + contarMinasAdyacentes(mapa,4,4) + " minas adyacentes.");
+console.log("El progreso es:");
+console.table(progreso);
+console.log("Acabas de revelar la casilla (4,4):");
+progreso = mostrarCasillasAdyacentesVaciasONumericas(mapa, progreso, 4, 4);
+console.table(progreso);
 
 /*while(vivo){
     console.log("Estás en la ronda " + (ronda+1) + ":");
