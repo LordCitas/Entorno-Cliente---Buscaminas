@@ -160,8 +160,8 @@ function jugar(){
 }
 
 //Pedimos el tamaño del tablero al usuario
-numFilas = parseInt(prompt("Introduce el número de filas del tablero (mínimo 1): "));
-while(isNaN(numFilas) || numFilas < 1){
+numFilas = parseInt(prompt("Introduce el número de filas del tablero (mínimo 2) (colocaremos un número de bombas igual al 20% del número de casillas): "));
+while(isNaN(numFilas) || numFilas < 2){
     numFilas = parseInt(prompt("El número de filas del tablero debe ser mayor o igual que 1. Introdúcelo de nuevo: "));
 }
 
@@ -173,8 +173,11 @@ mapa = colocarMinas(mapa, numBombas);
 console.log("El mapa de minas es:");
 console.table(mapa);
 
+//Mientras no hayamos revelado una bomba, seguimos jugando
 while(vivo){
     jugar();
+
+    //Si ya no quedan más casillas por revelar, se termina la partida
     if(casillasRestantes === 0){
         break;
     }
@@ -184,7 +187,7 @@ while(vivo){
 console.log("Estado final del tablero: ");
 console.table(progreso);
 
-//Mensaje final
+//Mensaje final diferenciando si hemos ganado o perdido
 if(vivo){
     console.log("¡Felicidades! ¡Has ganado!");
 } else {
